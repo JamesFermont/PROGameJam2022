@@ -17,17 +17,16 @@ public class InteractionObject : MonoBehaviour
     [SerializeField] private int maxPositiveIndex;
     [Range(0, 20)]
     [SerializeField] private int maxNegativeIndex;
-    [Space]
-    [SerializeField] private Transform pivotTransform;
 
     private int currentPositiveIndex;
     private int currentNegativeIndex;
     private MeshRenderer meshRenderer;
+    private Transform pivotTransform;
 
     void Start()
     {
         meshRenderer = GetComponent<MeshRenderer>();
-        pivotTransform = pivotTransform == null ? this.transform : pivotTransform;
+        pivotTransform = transform.root;
 
         meshRenderer.material.color = axisColors[(int)axisType];
     }
