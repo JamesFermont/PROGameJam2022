@@ -193,8 +193,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02b460c6b356f204f810337f68aba9e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraTransform: {fileID: 2496525168884357262}
   maxSpeed: 10
   maxAcceleration: 10
   maxAirAcceleration: 10
   jumpHeight: 3.1
-  maxAirJumps: 1
+  maxAirJumps: 0
