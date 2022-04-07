@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour {
     [Header("Aim Settings")]
-    [SerializeField] private Transform cameraTransform;
+    [SerializeField] private Transform pivotTransform;
     [SerializeField, Range(1f, 360f)] private float rotationSpeed = 90f;
     [SerializeField, Range(-89f, 89f)] private float minVerticalAngle = -30f, maxVerticalAngle = 60f;
     [SerializeField, Range(0f, 2f)] private float sensitivityX = 1f, sensitivityY = 1f;
@@ -28,7 +28,7 @@ public class Movement : MonoBehaviour {
     private Vector2 _cameraAngles;
     private Vector3 _playerInput;
     private Vector3 _contactNormal;
-    private Vector3 _velocity, _connectionVelocity;
+    private Vector3 _velocity, _connectionVelocity, _connectionWorldPosition, _connectionLocalPosition;
     private Vector3 _upAxis, _rightAxis, _forwardAxis;
     private Quaternion _gravityAlignment = Quaternion.identity;
     private bool _jumpRequested;
@@ -42,7 +42,7 @@ public class Movement : MonoBehaviour {
         _inputToAxis = new InputAxisConverter();
         _input = new Input().Player;
         _input.Enable();
-        transform.localRotation = cameraTransform.localRotation = Quaternion.Euler(_cameraAngles);
+        transform.localRotation = pivotTransform.localRotation = Quaternion.Euler(_cameraAngles);
         Cursor.lockState = CursorLockMode.Locked;
     }
 
@@ -51,8 +51,8 @@ public class Movement : MonoBehaviour {
         _playerInput = new Vector3(inputXZ.x, 0f, inputXZ.y);
         _playerInput = Vector3.ClampMagnitude(_playerInput, 1f);
         
-        _rightAxis = ProjectDirectionOnPlane(transform.right, _upAxis);
-        _forwardAxis = ProjectDirectionOnPlane(transform.forward, _upAxis);
+        _rightAxis = ProjectDirectionOnPlane(pivotTransform.right, _upAxis);
+        _forwardAxis = ProjectDirectionOnPlane(pivotTransform.forward, _upAxis);
 
         _jumpRequested |= _input.Jump.WasPerformedThisFrame();
     }
@@ -90,6 +90,19 @@ public class Movement : MonoBehaviour {
         } else {
             _contactNormal = _upAxis;
         }
+
+        if ( _connectedBody ) {
+            UpdateConnectionState();
+        }
+    }
+    
+    private void UpdateConnectionState() {
+        if ( _connectedBody == _previousConnectedBody ) {
+            Vector3 connectionMovement = _connectedBody.transform.TransformPoint(_connectionLocalPosition) - _connectionWorldPosition;
+            _connectionVelocity = connectionMovement / Time.deltaTime;
+        }
+        _connectionWorldPosition = _body.position;
+        _connectionLocalPosition = _connectedBody.transform.InverseTransformPoint(_connectionWorldPosition);
     }
 
     private void AdjustVelocity() {
@@ -160,10 +173,8 @@ public class Movement : MonoBehaviour {
             _cameraAngles += rotationSpeed * Time.unscaledDeltaTime * cameraInput * Sensitivity * Invert;
         }
         ConstrainAngles();
-        Quaternion bodyRotation = _gravityAlignment * Quaternion.Euler(new Vector3(0f, _cameraAngles.y, 0f));
-        Quaternion lookRotation = Quaternion.Euler(new Vector3(_cameraAngles.x, 0f, 0f));
-        cameraTransform.localRotation = lookRotation;
-        transform.localRotation = bodyRotation;
+        Quaternion bodyRotation = _gravityAlignment * Quaternion.Euler(_cameraAngles);
+        pivotTransform.localRotation = bodyRotation;
     }
     
     private void UpdateGravityAlignment() {
@@ -210,9 +221,9 @@ public class Movement : MonoBehaviour {
     }
 
     private void OnDrawGizmos() {
-        if ( cameraTransform ) {
+        if ( pivotTransform ) {
             Gizmos.color = Color.red;
-            Gizmos.DrawRay(cameraTransform.position, cameraTransform.forward);
+            Gizmos.DrawRay(pivotTransform.position, pivotTransform.forward);
         }
     }
 }

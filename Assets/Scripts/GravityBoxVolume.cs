@@ -11,12 +11,11 @@ public class GravityBoxVolume : GravitySource {
 	[SerializeField] private float gravity = 9.81f;
 	[SerializeField] private KillDirection killDirection;
 	[SerializeField] private Transform respawnPoint;
-	[SerializeField] private GravitySource exitSource;
 	private bool _hasPlayer;
 	
 	public override Vector3 GetGravity(Vector3 position) {
 		if ( !_hasPlayer ) {
-			return exitSource != null ? exitSource.GetGravity(position) : Physics.gravity;
+			return Vector3.zero;
 		}
 
 		float g = -gravity;
