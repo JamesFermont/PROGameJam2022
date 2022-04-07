@@ -153,6 +153,9 @@ public class Movement : MonoBehaviour {
         UpdateGravityAlignment();
         Vector2 cameraInput = _input.Aim.ReadValue<Vector2>();
         const float e = 0.001f;
+        if ( cameraInput.sqrMagnitude > 1000f ) {
+            return;
+        }
         if ( cameraInput.x < -e || cameraInput.x > e || cameraInput.y < -e || cameraInput.y > e ) {
             _cameraAngles += rotationSpeed * Time.unscaledDeltaTime * cameraInput * Sensitivity * Invert;
         }

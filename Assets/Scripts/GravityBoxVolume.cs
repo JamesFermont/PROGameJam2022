@@ -10,6 +10,7 @@ public class GravityBoxVolume : GravitySource {
 	
 	[SerializeField] private float gravity = 9.81f;
 	[SerializeField] private KillDirection killDirection;
+	[SerializeField] private Transform respawnPoint;
 	[SerializeField] private GravitySource exitSource;
 	private bool _hasPlayer;
 	
@@ -39,6 +40,7 @@ public class GravityBoxVolume : GravitySource {
 			Debug.Log(dot);
 			if ( dot == (int)killDirection ) {
 				Debug.Log("Counts as kill!");
+				other.transform.position = respawnPoint.position;
 			}
 		}
 	}
