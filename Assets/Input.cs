@@ -134,6 +134,74 @@ public partial class @Input : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Shooting"",
+            ""id"": ""acf24c4b-20f6-41cc-8eff-8e5ca1519f4a"",
+            ""actions"": [
+                {
+                    ""name"": ""Shoot"",
+                    ""type"": ""Button"",
+                    ""id"": ""2fc17f76-3acc-46de-ac35-4dcbcc2fde7a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""FireModeSwitch"",
+                    ""type"": ""Button"",
+                    ""id"": ""d557236d-3536-40db-80ba-f8bdd99bb5ec"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ProjectileModeSwitch"",
+                    ""type"": ""Button"",
+                    ""id"": ""8bc6df02-896b-4874-a01b-4141e309f394"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""a5a978a4-4fc9-4a19-8fed-83019dddd67d"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""df3d0046-90f0-4a19-8995-31f55a2cc117"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FireModeSwitch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5d50d583-728b-4275-8cbf-375fd69d0330"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ProjectileModeSwitch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -143,6 +211,11 @@ public partial class @Input : IInputActionCollection2, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Aim = m_Player.FindAction("Aim", throwIfNotFound: true);
+        // Shooting
+        m_Shooting = asset.FindActionMap("Shooting", throwIfNotFound: true);
+        m_Shooting_Shoot = m_Shooting.FindAction("Shoot", throwIfNotFound: true);
+        m_Shooting_FireModeSwitch = m_Shooting.FindAction("FireModeSwitch", throwIfNotFound: true);
+        m_Shooting_ProjectileModeSwitch = m_Shooting.FindAction("ProjectileModeSwitch", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -247,10 +320,65 @@ public partial class @Input : IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Shooting
+    private readonly InputActionMap m_Shooting;
+    private IShootingActions m_ShootingActionsCallbackInterface;
+    private readonly InputAction m_Shooting_Shoot;
+    private readonly InputAction m_Shooting_FireModeSwitch;
+    private readonly InputAction m_Shooting_ProjectileModeSwitch;
+    public struct ShootingActions
+    {
+        private @Input m_Wrapper;
+        public ShootingActions(@Input wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Shoot => m_Wrapper.m_Shooting_Shoot;
+        public InputAction @FireModeSwitch => m_Wrapper.m_Shooting_FireModeSwitch;
+        public InputAction @ProjectileModeSwitch => m_Wrapper.m_Shooting_ProjectileModeSwitch;
+        public InputActionMap Get() { return m_Wrapper.m_Shooting; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(ShootingActions set) { return set.Get(); }
+        public void SetCallbacks(IShootingActions instance)
+        {
+            if (m_Wrapper.m_ShootingActionsCallbackInterface != null)
+            {
+                @Shoot.started -= m_Wrapper.m_ShootingActionsCallbackInterface.OnShoot;
+                @Shoot.performed -= m_Wrapper.m_ShootingActionsCallbackInterface.OnShoot;
+                @Shoot.canceled -= m_Wrapper.m_ShootingActionsCallbackInterface.OnShoot;
+                @FireModeSwitch.started -= m_Wrapper.m_ShootingActionsCallbackInterface.OnFireModeSwitch;
+                @FireModeSwitch.performed -= m_Wrapper.m_ShootingActionsCallbackInterface.OnFireModeSwitch;
+                @FireModeSwitch.canceled -= m_Wrapper.m_ShootingActionsCallbackInterface.OnFireModeSwitch;
+                @ProjectileModeSwitch.started -= m_Wrapper.m_ShootingActionsCallbackInterface.OnProjectileModeSwitch;
+                @ProjectileModeSwitch.performed -= m_Wrapper.m_ShootingActionsCallbackInterface.OnProjectileModeSwitch;
+                @ProjectileModeSwitch.canceled -= m_Wrapper.m_ShootingActionsCallbackInterface.OnProjectileModeSwitch;
+            }
+            m_Wrapper.m_ShootingActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Shoot.started += instance.OnShoot;
+                @Shoot.performed += instance.OnShoot;
+                @Shoot.canceled += instance.OnShoot;
+                @FireModeSwitch.started += instance.OnFireModeSwitch;
+                @FireModeSwitch.performed += instance.OnFireModeSwitch;
+                @FireModeSwitch.canceled += instance.OnFireModeSwitch;
+                @ProjectileModeSwitch.started += instance.OnProjectileModeSwitch;
+                @ProjectileModeSwitch.performed += instance.OnProjectileModeSwitch;
+                @ProjectileModeSwitch.canceled += instance.OnProjectileModeSwitch;
+            }
+        }
+    }
+    public ShootingActions @Shooting => new ShootingActions(this);
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
+    }
+    public interface IShootingActions
+    {
+        void OnShoot(InputAction.CallbackContext context);
+        void OnFireModeSwitch(InputAction.CallbackContext context);
+        void OnProjectileModeSwitch(InputAction.CallbackContext context);
     }
 }
