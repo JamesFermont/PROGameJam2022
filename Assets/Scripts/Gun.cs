@@ -9,8 +9,8 @@ public class Gun : MonoBehaviour
     [SerializeField, Min(0.1f)] private float aimDownSightDuration, stopAimDuration;
 
     private WeaponMove _weaponMove;
-    private bool _isFiring;
-    private float _timeToNextFire;
+    private bool _isFiring, _isFiringContinuous, _isAimingDownSight;
+    private float _timeSinceLastFire, _timeToNextFire;
     private Input.ShootingActions _input;
     private ProjectileMode _mode;
     private FireMode _fireMode;
@@ -32,6 +32,12 @@ public class Gun : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        if ( _isFiring == false ) {
+            if ( _isAimingDownSight ) {
+                StartCoroutine(StopAim());
+            }
+        }
+        
         if ( _input.ProjectileModeSwitch.WasPerformedThisFrame() ) {
             Toggle();
             Debug.Log("Projectile Mode set to " + _mode);
@@ -62,31 +68,40 @@ public class Gun : MonoBehaviour
 
         if (_isFiring)
         {
-            Debug.Log("Pew!");
-            StartCoroutine(AimDownSight());
-            _timeToNextFire = Time.realtimeSinceStartup + fireRateSeconds;
+            if ( !_isAimingDownSight ) {
+                StartCoroutine(AimDownSight());
+                _timeToNextFire = Time.realtimeSinceStartup + fireRateSeconds + aimDownSightDuration;
+            } else {
+                FireProjectile();
+                _timeToNextFire = Time.realtimeSinceStartup + fireRateSeconds;
+            }
         }
+    }
+
+    private void FireProjectile() {
+        Projectile p = Instantiate(projectile, fpsCam.position + fpsCam.forward, fpsCam.rotation);
+        p.mode = _mode;
+        p.hitCount = (int)_fireMode;
     }
 
     private IEnumerator AimDownSight() {
         float timeElapsed = 0f;
 
         while (timeElapsed < aimDownSightDuration) {
-            float t = timeElapsed / aimDownSightDuration;
+            float t = timeElapsed / (aimDownSightDuration * 0.8f);
             _weaponMove.SetLerpValue(t);
             timeElapsed += Time.deltaTime;
             yield return null;
         }
+        _isAimingDownSight = true;
         
         _weaponMove.SetLerpValue(1f);
-        Projectile p = Instantiate(projectile, fpsCam.position + fpsCam.forward, fpsCam.rotation);
-        p.mode = _mode;
-        p.hitCount = (int)_fireMode;
-        StartCoroutine(StopAim());
+        FireProjectile();
     }
 
     private IEnumerator StopAim() {
         float timeElapsed = 0f;
+        _isAimingDownSight = false;
         
         while (timeElapsed < stopAimDuration) {
             float t = timeElapsed / stopAimDuration;
