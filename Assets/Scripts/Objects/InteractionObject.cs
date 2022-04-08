@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 using static Gun;
@@ -16,6 +17,7 @@ public class InteractionObject : MonoBehaviour
     [SerializeField] private int maxPositiveIndex;
     [Range(0, 20)]
     [SerializeField] private int maxNegativeIndex;
+    [SerializeField] private float lerpTime = 1f;
 
     private int currentPositiveIndex;
     private int currentNegativeIndex;
@@ -90,13 +92,13 @@ public class InteractionObject : MonoBehaviour
         switch ((int)axisType)
         {
             case 0:
-                pivotTransform.position += new Vector3(increment, 0f, 0f);
+                StartCoroutine(LerpMove(pivotTransform.position + new Vector3(increment, 0f, 0f)));
                 break;
             case 1:
-                pivotTransform.position += new Vector3(0f, increment, 0f);
+                StartCoroutine(LerpMove(pivotTransform.position + new Vector3(0f, increment, 0f)));
                 break;
             case 2:
-                pivotTransform.position += new Vector3(0f, 0f, increment);
+                StartCoroutine(LerpMove(pivotTransform.position + new Vector3(0f, 0f, increment)));
                 break;
             default:
                 break;
@@ -108,13 +110,13 @@ public class InteractionObject : MonoBehaviour
         switch ((int)axisType)
         {
             case 0:
-                pivotTransform.Rotate(new Vector3(increment, 0f, 0f));
+                StartCoroutine(LerpRotate(pivotTransform.rotation.eulerAngles + new Vector3(increment, 0f, 0f)));
                 break;
             case 1:
-                pivotTransform.Rotate(new Vector3(0f, increment, 0f));
+                StartCoroutine(LerpRotate(pivotTransform.rotation.eulerAngles + new Vector3(0f, increment, 0f)));
                 break;
             case 2:
-                pivotTransform.Rotate(new Vector3(0f, 0f, increment));
+                StartCoroutine(LerpRotate(pivotTransform.rotation.eulerAngles + new Vector3(0f, 0f, increment)));
                 break;
             default:
                 break;
@@ -126,17 +128,62 @@ public class InteractionObject : MonoBehaviour
         switch ((int)axisType)
         {
             case 0:
-                pivotTransform.localScale += new Vector3(increment, 0f, 0f);
+                StartCoroutine(LerpScale(pivotTransform.localScale + new Vector3(increment, 0f, 0f)));
                 break;
             case 1:
-                pivotTransform.localScale += new Vector3(0f, increment, 0f);
+                StartCoroutine(LerpScale(pivotTransform.localScale + new Vector3(0f, increment, 0f)));
                 break;
             case 2:
-                pivotTransform.localScale += new Vector3(0f, 0f, increment);
+                StartCoroutine(LerpScale(pivotTransform.localScale + new Vector3(0f, 0f, increment)));
                 break;
             default:
                 break;
         }
+    }
+
+    IEnumerator LerpMove(Vector3 targetPosition)
+    {
+        float currentTime = 0f;
+        Vector3 initialPosition = pivotTransform.position;
+
+        while (currentTime <= lerpTime)
+        {
+            pivotTransform.position = Vector3.Lerp(initialPosition, targetPosition, (currentTime / lerpTime));
+            currentTime += Time.deltaTime;
+            yield return null;
+        }
+
+        pivotTransform.position = targetPosition;
+    }
+
+    IEnumerator LerpRotate(Vector3 targetRotation)
+    {
+        float currentTime = 0f;
+        Vector3 initialRotation = pivotTransform.rotation.eulerAngles;
+
+        while (currentTime <= lerpTime)
+        {
+            pivotTransform.rotation = Quaternion.Euler(Vector3.Lerp(initialRotation, targetRotation, (currentTime / lerpTime)));
+            currentTime += Time.deltaTime;
+            yield return null;
+        }
+
+        pivotTransform.rotation = Quaternion.Euler(targetRotation);
+    }
+
+    IEnumerator LerpScale(Vector3 targetScale)
+    {
+        float currentTime = 0f;
+        Vector3 initialScale = pivotTransform.localScale;
+
+        while (currentTime <= lerpTime)
+        {
+            pivotTransform.localScale = Vector3.Lerp(initialScale, targetScale, (currentTime / lerpTime));
+            currentTime += Time.deltaTime;
+            yield return null;
+        }
+
+        pivotTransform.localScale = targetScale;
     }
 
     #endregion
