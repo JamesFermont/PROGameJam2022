@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+
+using static Gun;
 
 public class InteractionObject : MonoBehaviour
 {
@@ -154,11 +153,5 @@ public class InteractionObject : MonoBehaviour
         X,
         Y,
         Z
-    }
-
-    public enum ProjectileMode
-    {
-        Positive = 1,
-        Negative = -1
     }
 }

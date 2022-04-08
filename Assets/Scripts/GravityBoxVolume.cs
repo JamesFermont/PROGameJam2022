@@ -31,6 +31,8 @@ public class GravityBoxVolume : GravitySource {
 	private void OnTriggerExit(Collider other) {
 		if ( other.CompareTag("Player") ) {
 			_hasPlayer = false;
+		} else {
+			return;
 		}
 
 		if ( killDirection != KillDirection.None ) {

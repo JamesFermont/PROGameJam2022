@@ -10,8 +10,6 @@ public class Projectile : MonoBehaviour
     public int hitCount;
 
     [SerializeField] private float projectileSpeed;
-    [Space]
-    [SerializeField] private string targetTag = "Interactable";
 
     private Rigidbody rb;
 
@@ -19,19 +17,20 @@ public class Projectile : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
 
-        rb.AddForce(transform.forward * projectileSpeed, ForceMode.Impulse);
+        rb.velocity = transform.forward * projectileSpeed;
     }
 
-    public void OnTriggerEnter(Collider collider)
-    {
-        if (collider.CompareTag(targetTag))
-        {
-            InteractionObject interactionObject = collider.GetComponent<InteractionObject>();
-            interactionObject.DoInteract(mode);
-        }
-
+    public void OnCollisionEnter(Collision col) {
         hitCount--;
-        if (hitCount == 0)
+        if ( hitCount == 0 ) {
+            if ( col.gameObject.TryGetComponent(out InteractionObject interactionObject) ) {
+                interactionObject.DoInteract(mode);
+            }
             Destroy(gameObject);
+        }
+    }
+
+    private void OnDrawGizmos() {
+        Gizmos.DrawRay(transform.position, rb.velocity);
     }
 }

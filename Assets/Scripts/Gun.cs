@@ -4,7 +4,7 @@ using UnityEngine;
 public class Gun : MonoBehaviour
 {
     [SerializeField] private Transform fpsCam;
-    [SerializeField] private GameObject projectile;
+    [SerializeField] private Projectile projectile;
     [SerializeField] private float fireRateSeconds = 1f;
     [SerializeField, Min(0.1f)] private float aimDownSightDuration, stopAimDuration;
 
@@ -79,7 +79,9 @@ public class Gun : MonoBehaviour
         }
         
         _weaponMove.SetLerpValue(1f);
-        //Instantiate(Projectile, FpsCam.position + FpsCam.forward, FpsCam.rotation);
+        Projectile p = Instantiate(projectile, fpsCam.position + fpsCam.forward, fpsCam.rotation);
+        p.mode = _mode;
+        p.hitCount = (int)_fireMode;
         StartCoroutine(StopAim());
     }
 
