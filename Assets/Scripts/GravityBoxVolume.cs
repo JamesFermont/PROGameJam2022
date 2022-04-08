@@ -11,12 +11,11 @@ public class GravityBoxVolume : GravitySource {
 	[SerializeField] private float gravity = 9.81f;
 	[SerializeField] private KillDirection killDirection;
 	[SerializeField] private Transform respawnPoint;
-	[SerializeField] private GravitySource exitSource;
 	private bool _hasPlayer;
 	
 	public override Vector3 GetGravity(Vector3 position) {
 		if ( !_hasPlayer ) {
-			return exitSource != null ? exitSource.GetGravity(position) : Physics.gravity;
+			return Vector3.zero;
 		}
 
 		float g = -gravity;
@@ -32,6 +31,8 @@ public class GravityBoxVolume : GravitySource {
 	private void OnTriggerExit(Collider other) {
 		if ( other.CompareTag("Player") ) {
 			_hasPlayer = false;
+		} else {
+			return;
 		}
 
 		if ( killDirection != KillDirection.None ) {
