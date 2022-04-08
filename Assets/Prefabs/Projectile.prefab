@@ -98,7 +98,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: 0
   hitCount: 0
-  projectileSpeed: 10
+  projectileSpeed: 50
 --- !u!54 &3022247826938441820
 Rigidbody:
   m_ObjectHideFlags: 0

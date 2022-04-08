@@ -173,8 +173,9 @@ public class Movement : MonoBehaviour {
             _cameraAngles += rotationSpeed * Time.unscaledDeltaTime * cameraInput * Sensitivity * Invert;
         }
         ConstrainAngles();
-        Quaternion bodyRotation = _gravityAlignment * Quaternion.Euler(_cameraAngles);
+        Quaternion bodyRotation = Quaternion.Euler(_cameraAngles);
         pivotTransform.localRotation = bodyRotation;
+        transform.rotation = _gravityAlignment;
     }
     
     private void UpdateGravityAlignment() {

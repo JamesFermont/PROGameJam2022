@@ -7,8 +7,12 @@ public class GravityTrigger : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other) {
         if ( other.CompareTag("Player") ) {
-            gravityToDisable.enabled = false;
-            gravityToEnable.enabled = true;
+            if ( gravityToDisable ) {
+                gravityToDisable.enabled = false;
+            }
+            if ( gravityToEnable ) {
+                gravityToEnable.enabled = true;
+            }
         }
 
         enabled = false;

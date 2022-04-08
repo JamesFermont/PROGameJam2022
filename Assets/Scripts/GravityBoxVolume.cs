@@ -42,6 +42,7 @@ public class GravityBoxVolume : GravitySource {
 			if ( dot == (int)killDirection ) {
 				Debug.Log("Counts as kill!");
 				other.transform.position = respawnPoint.position;
+				other.GetComponent<Rigidbody>().velocity = Vector3.zero;
 			}
 		}
 	}
