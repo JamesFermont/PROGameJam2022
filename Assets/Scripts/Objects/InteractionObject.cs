@@ -15,12 +15,11 @@ public class InteractionObject : MonoBehaviour
     [SerializeField] private float increment;
     [Range(0, 20)]
     [SerializeField] private int maxPositiveIndex;
-    [Range(0, 20)]
+    [Range(-20, 0)]
     [SerializeField] private int maxNegativeIndex;
     [SerializeField] private float lerpTime = 1f;
 
-    private int currentPositiveIndex;
-    private int currentNegativeIndex;
+    private int currentIndex;
     private MeshRenderer meshRenderer;
     private Transform pivotTransform;
 
@@ -62,9 +61,9 @@ public class InteractionObject : MonoBehaviour
         bool maxIncrementReached = false;
 
         if ((int)mode == 1)
-            maxIncrementReached = currentPositiveIndex == maxPositiveIndex;
+            maxIncrementReached = currentIndex == maxPositiveIndex;
         else if ((int)mode == -1)
-            maxIncrementReached = currentNegativeIndex == maxNegativeIndex;
+            maxIncrementReached = currentIndex == maxNegativeIndex;
 
         return maxIncrementReached;
     }
@@ -72,15 +71,9 @@ public class InteractionObject : MonoBehaviour
     private void SetIncrementIndex(ProjectileMode mode)
     {
         if ((int)mode == 1)
-        {
-            currentPositiveIndex += currentNegativeIndex > 0 ? 0 : 1;
-            currentNegativeIndex += currentNegativeIndex > 0 ? -1 : 0;
-        }
+            currentIndex++;
         else if ((int)mode == -1)
-        {
-            currentNegativeIndex += currentPositiveIndex > 0 ? 0 : 1;
-            currentPositiveIndex += currentPositiveIndex > 0 ? -1 : 0;
-        }
+            currentIndex--;
     }
 
     #endregion
