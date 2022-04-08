@@ -6,10 +6,8 @@ public class Gun : MonoBehaviour
     private FireMode firemode;
     private float speed = 25f;
 
-    public Camera FpsCam;
-    public GameObject Cross;
+    public Transform FpsCam;
     public GameObject Projectile;
-    public GameObject Startpoint;
     public Input.ShootingActions Input;
 
     private void Awake()
@@ -22,7 +20,6 @@ public class Gun : MonoBehaviour
     {
         mode = ProjectileMode.Positive;
         firemode = FireMode.Direct;
-        var direction = Cross.transform.position - FpsCam.transform.position;
     }
 
     // Update is called once per frame
@@ -30,7 +27,7 @@ public class Gun : MonoBehaviour
     {
         if (Input.Shoot.WasPerformedThisFrame())
         {
-            Instantiate(Projectile, Startpoint.transform.position, Quaternion.identity);
+            Instantiate(Projectile, FpsCam.position+FpsCam.forward, Quaternion.identity);
         }
 
         if (Input.ProjectileModeSwitch.WasPerformedThisFrame())
