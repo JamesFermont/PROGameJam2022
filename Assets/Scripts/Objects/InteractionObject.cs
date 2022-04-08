@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class InteractionObject : MonoBehaviour
 {
@@ -20,10 +21,12 @@ public class InteractionObject : MonoBehaviour
     private int currentPositiveIndex;
     private int currentNegativeIndex;
     private MeshRenderer meshRenderer;
+    private Transform pivotTransform;
 
     void Start()
     {
         meshRenderer = GetComponent<MeshRenderer>();
+        pivotTransform = transform.root;
 
         meshRenderer.material.color = axisColors[(int)axisType];
     }
@@ -88,13 +91,13 @@ public class InteractionObject : MonoBehaviour
         switch ((int)axisType)
         {
             case 0:
-                transform.position += new Vector3(increment, 0f, 0f);
+                pivotTransform.position += new Vector3(increment, 0f, 0f);
                 break;
             case 1:
-                transform.position += new Vector3(0f, increment, 0f);
+                pivotTransform.position += new Vector3(0f, increment, 0f);
                 break;
             case 2:
-                transform.position += new Vector3(0f, 0f, increment);
+                pivotTransform.position += new Vector3(0f, 0f, increment);
                 break;
             default:
                 break;
@@ -106,13 +109,13 @@ public class InteractionObject : MonoBehaviour
         switch ((int)axisType)
         {
             case 0:
-                transform.Rotate(new Vector3(increment, 0f, 0f));
+                pivotTransform.Rotate(new Vector3(increment, 0f, 0f));
                 break;
             case 1:
-                transform.Rotate(new Vector3(0f, increment, 0f));
+                pivotTransform.Rotate(new Vector3(0f, increment, 0f));
                 break;
             case 2:
-                transform.Rotate(new Vector3(0f, 0f, increment));
+                pivotTransform.Rotate(new Vector3(0f, 0f, increment));
                 break;
             default:
                 break;
@@ -124,13 +127,13 @@ public class InteractionObject : MonoBehaviour
         switch ((int)axisType)
         {
             case 0:
-                transform.localScale += new Vector3(increment, 0f, 0f);
+                pivotTransform.localScale += new Vector3(increment, 0f, 0f);
                 break;
             case 1:
-                transform.localScale += new Vector3(0f, increment, 0f);
+                pivotTransform.localScale += new Vector3(0f, increment, 0f);
                 break;
             case 2:
-                transform.localScale += new Vector3(0f, 0f, increment);
+                pivotTransform.localScale += new Vector3(0f, 0f, increment);
                 break;
             default:
                 break;
