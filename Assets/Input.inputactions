@@ -112,6 +112,74 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Shooting",
+            "id": "acf24c4b-20f6-41cc-8eff-8e5ca1519f4a",
+            "actions": [
+                {
+                    "name": "Shoot",
+                    "type": "Button",
+                    "id": "2fc17f76-3acc-46de-ac35-4dcbcc2fde7a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "FireModeSwitch",
+                    "type": "Button",
+                    "id": "d557236d-3536-40db-80ba-f8bdd99bb5ec",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ProjectileModeSwitch",
+                    "type": "Button",
+                    "id": "8bc6df02-896b-4874-a01b-4141e309f394",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "a5a978a4-4fc9-4a19-8fed-83019dddd67d",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Shoot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "df3d0046-90f0-4a19-8995-31f55a2cc117",
+                    "path": "<Mouse>/middleButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "FireModeSwitch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5d50d583-728b-4275-8cbf-375fd69d0330",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ProjectileModeSwitch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []
