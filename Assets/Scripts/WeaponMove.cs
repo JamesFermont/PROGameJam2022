@@ -14,4 +14,9 @@ public class WeaponMove : MonoBehaviour {
         Quaternion rotation = Quaternion.Slerp(walkTransform.rotation, shootTransform.rotation, t);
         transform.SetPositionAndRotation(position, rotation);
     }
+
+    public void SetLerpValue(float value) {
+        value = Mathf.Clamp01(value);
+        t = value;
+    }
 }
