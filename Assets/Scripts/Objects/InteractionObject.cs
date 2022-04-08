@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using System;
 
 using static Gun;
 
@@ -15,14 +16,20 @@ public class InteractionObject : MonoBehaviour
     [SerializeField] private float increment;
     [Range(0, 20)]
     [SerializeField] private int maxPositiveIndex;
-    [Range(0, 20)]
+    [Range(-20, 0)]
     [SerializeField] private int maxNegativeIndex;
     [SerializeField] private float lerpTime = 1f;
 
-    private int currentPositiveIndex;
-    private int currentNegativeIndex;
+    private int currentIndex;
     private MeshRenderer meshRenderer;
     private Transform pivotTransform;
+
+    private Action<float>[] interactions;
+
+    void Awake()
+    {
+        interactions = new Action<float>[] { MoveInteraction, RotateInteraction, ScaleInteraction };
+    }
 
     void Start()
     {
@@ -34,111 +41,50 @@ public class InteractionObject : MonoBehaviour
 
     public void DoInteract(ProjectileMode mode)
     {
-        if (CheckMaxIncrementReached(mode))
+        if (!TryChangeIndex(mode))
             return;
 
-        switch ((int)interactionType)
-        {
-            case 0:
-                MoveInteraction(increment * (int)mode);
-                break;
-            case 1:
-                RotateInteraction(increment * (int)mode);
-                break;
-            case 2:
-                ScaleInteraction(increment * (int)mode);
-                break;
-            default:
-                break;
-        }
+        float delta = increment * (int)mode;
 
-        SetIncrementIndex(mode);
+        interactions[(int)interactionType](delta);
     }
 
     #region Index Logic
 
-    private bool CheckMaxIncrementReached(ProjectileMode mode)
+    private bool TryChangeIndex(ProjectileMode mode)
     {
-        bool maxIncrementReached = false;
+        int previousIndex = currentIndex;
 
-        if ((int)mode == 1)
-            maxIncrementReached = currentPositiveIndex == maxPositiveIndex;
-        else if ((int)mode == -1)
-            maxIncrementReached = currentNegativeIndex == maxNegativeIndex;
+        currentIndex += (int)mode;
+        currentIndex = Mathf.Clamp(currentIndex, maxNegativeIndex, maxPositiveIndex);
 
-        return maxIncrementReached;
-    }
-
-    private void SetIncrementIndex(ProjectileMode mode)
-    {
-        if ((int)mode == 1)
-        {
-            currentPositiveIndex += currentNegativeIndex > 0 ? 0 : 1;
-            currentNegativeIndex += currentNegativeIndex > 0 ? -1 : 0;
-        }
-        else if ((int)mode == -1)
-        {
-            currentNegativeIndex += currentPositiveIndex > 0 ? 0 : 1;
-            currentPositiveIndex += currentPositiveIndex > 0 ? -1 : 0;
-        }
+        return currentIndex != previousIndex;
     }
 
     #endregion
 
     #region Interaction Behaviour
 
-    public void MoveInteraction(float increment)
+    public void MoveInteraction(float delta)
     {
-        switch ((int)axisType)
-        {
-            case 0:
-                StartCoroutine(LerpMove(pivotTransform.position + new Vector3(increment, 0f, 0f)));
-                break;
-            case 1:
-                StartCoroutine(LerpMove(pivotTransform.position + new Vector3(0f, increment, 0f)));
-                break;
-            case 2:
-                StartCoroutine(LerpMove(pivotTransform.position + new Vector3(0f, 0f, increment)));
-                break;
-            default:
-                break;
-        }
+        StartCoroutine(LerpMove(pivotTransform.position + GetAxisVector(axisType) * delta));
     }
 
-    public void RotateInteraction(float increment)
+    public void RotateInteraction(float delta)
     {
-        switch ((int)axisType)
-        {
-            case 0:
-                StartCoroutine(LerpRotate(pivotTransform.rotation.eulerAngles + new Vector3(increment, 0f, 0f)));
-                break;
-            case 1:
-                StartCoroutine(LerpRotate(pivotTransform.rotation.eulerAngles + new Vector3(0f, increment, 0f)));
-                break;
-            case 2:
-                StartCoroutine(LerpRotate(pivotTransform.rotation.eulerAngles + new Vector3(0f, 0f, increment)));
-                break;
-            default:
-                break;
-        }
+        StartCoroutine(LerpRotate(pivotTransform.rotation.eulerAngles + GetAxisVector(axisType) * delta));
     }
 
-    public void ScaleInteraction(float increment)
+    private void ScaleInteraction(float delta)
     {
-        switch ((int)axisType)
-        {
-            case 0:
-                StartCoroutine(LerpScale(pivotTransform.localScale + new Vector3(increment, 0f, 0f)));
-                break;
-            case 1:
-                StartCoroutine(LerpScale(pivotTransform.localScale + new Vector3(0f, increment, 0f)));
-                break;
-            case 2:
-                StartCoroutine(LerpScale(pivotTransform.localScale + new Vector3(0f, 0f, increment)));
-                break;
-            default:
-                break;
-        }
+        StartCoroutine(LerpScale(pivotTransform.localScale + GetAxisVector(axisType) * delta));
+    }
+
+    private Vector3 GetAxisVector(AxisType axis)
+    {
+        Vector3 a = Vector3.zero;
+        a[(int)axis] = 1f;
+        return a;
     }
 
     IEnumerator LerpMove(Vector3 targetPosition)
